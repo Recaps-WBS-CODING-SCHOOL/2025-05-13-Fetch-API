@@ -100,27 +100,58 @@ const errorHandler = (error, container) => {
     setTimeout(() => h2.remove(), 3000);
 };
 
-const getAllDucks = () => {
-    console.log('You tried to fetch the ducks!');
+const getAllDucks = async () => {
+    // console.log('You tried to fetch the ducks!');
+    const res = await fetch('https://duckpond-89zn.onrender.com/wild-ducks');
+    if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
+    const data = await res.json();
+    return data;
 };
 
-const createDuck = (newDuck) => {
-    console.log(newDuck);
+const createDuck = async (newDuck) => {
+    // console.log(newDuck);
+    const res = await fetch('https://duckpond-89zn.onrender.com/wild-ducks', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(newDuck),
+    });
+    if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
+    const data = await res.json();
+    return data;
 };
 
 const updateDuck = async (duckId, updatedDuck) => {
-    console.log(`Duck ${duckId} updated to:`, updatedDuck);
+    const res = await fetch(
+        `https://duckpond-89zn.onrender.com/wild-ducks/${duckId}`,
+        {
+            method: 'PUT',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(updatedDuck),
+        }
+    );
+    if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
+    const data = await res.json();
+    return data;
 };
 
 const deleteDuck = async (duckId) => {
-    console.log(`${duckId} deleted`);
+    const res = await fetch(
+        `https://duckpond-89zn.onrender.com/wild-ducks/${duckId}`,
+        { method: 'DELETE' }
+    );
+    if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
 };
 
-summonBtn.addEventListener('click', () => {
-    getAllDucks();
+summonBtn.addEventListener('click', async () => {
+    try {
+        const allDucks = await getAllDucks();
+        allDucks.forEach((duck) => renderDuck(duck, pond));
+    } catch (error) {
+        errorHandler(error, pond);
+    }
 });
 
-addForm.addEventListener('submit', (e) => {
+addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const name = addForm.querySelector('#name');
@@ -137,8 +168,12 @@ addForm.addEventListener('submit', (e) => {
         imgUrl: imgUrl.value,
         quote: quote.value || null,
     };
-
-    createDuck(newDuck);
-
-    e.target.reset();
+    try {
+        const newDuckData = await createDuck(newDuck);
+        console.log(newDuckData);
+        renderDuck(newDuckData, pond);
+        e.target.reset();
+    } catch (error) {
+        errorHandler(error, addForm);
+    }
 });

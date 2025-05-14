@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { deleteDuck } from '../data/ducks';
 import EditForm from './EditForm';
 
 const DuckCard = ({ duck, setDucks }) => {
@@ -7,6 +8,7 @@ const DuckCard = ({ duck, setDucks }) => {
 
     const handleDelete = async () => {
         try {
+            await deleteDuck(_id);
             setDucks((prev) => prev.filter((duck) => duck._id !== _id));
         } catch (error) {
             console.error(error);

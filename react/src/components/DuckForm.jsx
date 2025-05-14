@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createDuck } from '../data/ducks';
 const DuckForm = ({ setDucks }) => {
     const [form, setForm] = useState({
         name: '',
@@ -15,7 +16,7 @@ const DuckForm = ({ setDucks }) => {
             return;
         }
         try {
-            const newDuck = { ...form };
+            const newDuck = await createDuck(form);
             setDucks((prev) => [...prev, newDuck]);
             setForm({
                 name: '',

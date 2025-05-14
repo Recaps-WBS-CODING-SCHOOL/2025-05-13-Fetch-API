@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { updateDuck } from '../data/ducks';
 
 const EditForm = ({ duck, setEditing, setDucks }) => {
     const { _id, name, imgUrl, quote } = duck;
@@ -15,7 +16,7 @@ const EditForm = ({ duck, setEditing, setDucks }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const updatedDuck = { ...form, _id };
+            const updatedDuck = await updateDuck(_id, form);
             setDucks((prev) =>
                 prev.map((duck) => (duck._id === _id ? updatedDuck : duck))
             );
